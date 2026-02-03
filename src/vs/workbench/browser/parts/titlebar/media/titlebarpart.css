@@ -255,7 +255,7 @@
 	display: none;
 }
 
-/* App Icon */
+/* App Icon (left — Windows/Linux legacy) */
 .monaco-workbench .part.titlebar > .titlebar-container > .titlebar-left > .window-appicon {
 	width: 35px;
 	height: 100%;
@@ -277,6 +277,25 @@
 }
 
 .monaco-workbench.fullscreen .part.titlebar > .titlebar-container > .titlebar-left > .window-appicon {
+	display: none;
+}
+
+/* Jiraya logo in title bar (top right) */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .window-appicon.jiraya-appicon {
+	width: 35px;
+	height: 100%;
+	min-width: 35px;
+	flex-shrink: 0;
+	position: relative;
+	z-index: 2500;
+	-webkit-app-region: no-drag;
+	background-image: url('../../../media/jiraya-logo.png');
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 20px;
+}
+
+.monaco-workbench.fullscreen .part.titlebar > .titlebar-container > .titlebar-right > .window-appicon.jiraya-appicon {
 	display: none;
 }
 

@@ -16,6 +16,9 @@ fi
 function code() {
 	cd "$ROOT"
 
+	# Allow Node to run .ts files (needed for Node 22+/23 when running preLaunch and other build scripts)
+	export NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--experimental-strip-types"
+
 	if [[ "$OSTYPE" == "darwin"* ]]; then
 		NAME=`node -p "require('./product.json').nameLong"`
 		CODE="./.build/electron/$NAME.app/Contents/MacOS/Electron"
@@ -26,7 +29,7 @@ function code() {
 
 	# Get electron, compile, built-in extensions
 	if [[ -z "${VSCODE_SKIP_PRELAUNCH}" ]]; then
-		node build/lib/preLaunch.ts
+		node --experimental-strip-types build/lib/preLaunch.ts
 	fi
 
 	# Manage built-in extensions

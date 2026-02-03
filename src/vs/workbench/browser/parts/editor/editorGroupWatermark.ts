@@ -41,6 +41,15 @@ const toggleTerminal: WatermarkEntry = { text: localize({ key: 'watermark.toggle
 const startDebugging: WatermarkEntry = { text: localize('watermark.startDebugging', "Start Debugging"), id: 'workbench.action.debug.start', when: { web: ContextKeyExpr.equals('terminalProcessSupported', true) } };
 const openSettings: WatermarkEntry = { text: localize('watermark.openSettings', "Open Settings"), id: 'workbench.action.openSettings' };
 
+// Jiraya default view: fixed list of five actions with labels/shortcuts matching the welcome design
+const jirayaWatermarkEntries: WatermarkEntry[] = [
+	{ text: localize('watermark.jiraya.newAgent', "New Agent"), id: 'workbench.action.chat.open' },
+	{ text: localize('watermark.jiraya.hideTerminal', "Hide Terminal"), id: 'workbench.action.togglePanel' },
+	{ text: localize('watermark.jiraya.showFiles', "Show Files"), id: 'workbench.view.explorer' },
+	{ text: localize('watermark.jiraya.searchFiles', "Search Files"), id: 'workbench.action.quickOpen' },
+	{ text: localize('watermark.jiraya.openBrowser', "Open Browser"), id: 'workbench.action.browser.open' },
+];
+
 const baseEntries: WatermarkEntry[] = [
 	openChat,
 	showCommands,
@@ -127,7 +136,7 @@ export class EditorGroupWatermark extends Disposable {
 
 		this._register(this.storageService.onWillSaveState(e => {
 			if (e.reason === WillSaveStateReason.SHUTDOWN) {
-				const entries = [...emptyWindowEntries, ...workspaceEntries, ...otherEntries];
+				const entries = [...jirayaWatermarkEntries, ...emptyWindowEntries, ...workspaceEntries, ...otherEntries];
 				for (const entry of entries) {
 					const when = isWeb ? entry.when?.web : entry.when?.native;
 					if (when) {
@@ -150,7 +159,8 @@ export class EditorGroupWatermark extends Disposable {
 			return;
 		}
 
-		const entries = this.filterEntries(this.workbenchState !== WorkbenchState.EMPTY ? workspaceEntries : emptyWindowEntries);
+		// Use Jiraya fixed shortcut list for both empty and workspace state
+		const entries = this.filterEntries(this.workbenchState !== WorkbenchState.EMPTY ? jirayaWatermarkEntries : jirayaWatermarkEntries);
 		if (entries.length < EditorGroupWatermark.MINIMUM_ENTRIES) {
 			const additionalEntries = this.filterEntries(otherEntries);
 			shuffle(additionalEntries);

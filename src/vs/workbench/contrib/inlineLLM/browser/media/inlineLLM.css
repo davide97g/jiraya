@@ -1,0 +1,81 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.inline-llm-widget-container {
+	padding: 8px;
+	box-sizing: border-box;
+}
+
+.inline-llm-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.inline-llm-input {
+	flex: 1;
+	min-width: 200px;
+	padding: 4px 8px;
+	font-family: var(--monaco-monospace-font);
+	font-size: 13px;
+	border: 1px solid var(--vscode-input-border);
+	background: var(--vscode-input-background);
+	color: var(--vscode-input-foreground);
+	border-radius: 2px;
+}
+
+.inline-llm-input::placeholder {
+	color: var(--vscode-input-placeholderForeground);
+}
+
+.inline-llm-input:focus {
+	outline: 1px solid var(--vscode-focusBorder);
+	outline-offset: -1px;
+}
+
+.inline-llm-buttons {
+	display: flex;
+	gap: 4px;
+}
+
+.inline-llm-btn {
+	padding: 4px 12px;
+	font-size: 12px;
+	border: 1px solid var(--vscode-button-border);
+	background: var(--vscode-button-background);
+	color: var(--vscode-button-foreground);
+	border-radius: 2px;
+	cursor: pointer;
+}
+
+.inline-llm-btn:hover {
+	background: var(--vscode-button-hoverBackground);
+}
+
+.inline-llm-btn:disabled {
+	opacity: 0.6;
+	cursor: default;
+}
+
+.inline-llm-apply {
+	background: var(--vscode-button-secondaryBackground);
+	color: var(--vscode-button-secondaryForeground);
+}
+
+.inline-llm-apply:hover {
+	background: var(--vscode-button-secondaryHoverBackground);
+}
+
+.inline-llm-status {
+	font-size: 12px;
+	color: var(--vscode-descriptionForeground);
+	margin-top: 6px;
+	line-height: 1.4;
+}
+
+.inline-llm-zone-widget .zone-widget-container {
+	border-top-color: var(--vscode-editorWidget-border);
+}

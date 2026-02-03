@@ -3,22 +3,22 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Codicon } from '../../../../base/common/codicons.js';
+import { KeyCode, KeyMod } from '../../../../base/common/keyCodes.js';
 import { localize2 } from '../../../../nls.js';
+import { Action2, MenuId, registerAction2 } from '../../../../platform/actions/common/actions.js';
+import { BrowserViewStorageScope } from '../../../../platform/browserView/common/browserView.js';
+import { BrowserViewUri } from '../../../../platform/browserView/common/browserViewUri.js';
 import { ContextKeyExpr } from '../../../../platform/contextkey/common/contextkey.js';
-import { Action2, registerAction2, MenuId } from '../../../../platform/actions/common/actions.js';
 import { ServicesAccessor } from '../../../../platform/instantiation/common/instantiation.js';
 import { KeybindingWeight } from '../../../../platform/keybinding/common/keybindingsRegistry.js';
-import { KeyMod, KeyCode } from '../../../../base/common/keyCodes.js';
-import { ACTIVE_GROUP, IEditorService, SIDE_GROUP } from '../../../services/editor/common/editorService.js';
-import { Codicon } from '../../../../base/common/codicons.js';
-import { BrowserEditor, CONTEXT_BROWSER_CAN_GO_BACK, CONTEXT_BROWSER_CAN_GO_FORWARD, CONTEXT_BROWSER_DEVTOOLS_OPEN, CONTEXT_BROWSER_FOCUSED, CONTEXT_BROWSER_STORAGE_SCOPE, CONTEXT_BROWSER_ELEMENT_SELECTION_ACTIVE, CONTEXT_BROWSER_FIND_WIDGET_FOCUSED, CONTEXT_BROWSER_FIND_WIDGET_VISIBLE } from './browserEditor.js';
-import { BrowserViewUri } from '../../../../platform/browserView/common/browserViewUri.js';
-import { IBrowserViewWorkbenchService } from '../common/browserView.js';
-import { BrowserViewStorageScope } from '../../../../platform/browserView/common/browserView.js';
-import { ChatContextKeys } from '../../chat/common/actions/chatContextKeys.js';
 import { IOpenerService } from '../../../../platform/opener/common/opener.js';
-import { IPreferencesService } from '../../../services/preferences/common/preferences.js';
 import { ITelemetryService } from '../../../../platform/telemetry/common/telemetry.js';
+import { ACTIVE_GROUP, IEditorService, SIDE_GROUP } from '../../../services/editor/common/editorService.js';
+import { IPreferencesService } from '../../../services/preferences/common/preferences.js';
+import { ChatContextKeys } from '../../chat/common/actions/chatContextKeys.js';
+import { IBrowserViewWorkbenchService } from '../common/browserView.js';
+import { BrowserEditor, CONTEXT_BROWSER_CAN_GO_BACK, CONTEXT_BROWSER_CAN_GO_FORWARD, CONTEXT_BROWSER_DEVTOOLS_OPEN, CONTEXT_BROWSER_ELEMENT_SELECTION_ACTIVE, CONTEXT_BROWSER_FIND_WIDGET_FOCUSED, CONTEXT_BROWSER_FIND_WIDGET_VISIBLE, CONTEXT_BROWSER_FOCUSED, CONTEXT_BROWSER_STORAGE_SCOPE } from './browserEditor.js';
 import { logBrowserOpen } from './browserViewTelemetry.js';
 
 // Context key expression to check if browser editor is active
@@ -40,7 +40,11 @@ class OpenIntegratedBrowserAction extends Action2 {
 			id: 'workbench.action.browser.open',
 			title: localize2('browser.openAction', "Open Integrated Browser"),
 			category: BrowserCategory,
-			f1: true
+			f1: true,
+			keybinding: {
+				weight: KeybindingWeight.WorkbenchContrib,
+				primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyB,
+			}
 		});
 	}
 

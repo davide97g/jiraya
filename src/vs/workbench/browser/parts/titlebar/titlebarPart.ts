@@ -3,58 +3,58 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import './media/titlebarpart.css';
-import { localize, localize2 } from '../../../../nls.js';
-import { MultiWindowParts, Part } from '../../part.js';
-import { ITitleService } from '../../../services/title/browser/titleService.js';
 import { getWCOTitlebarAreaRect, getZoomFactor, isWCOEnabled } from '../../../../base/browser/browser.js';
-import { MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility, hasCustomTitlebar, hasNativeTitlebar, DEFAULT_CUSTOM_TITLEBAR_HEIGHT, getWindowControlsStyle, WindowControlsStyle, TitlebarStyle, MenuSettings, hasNativeMenu } from '../../../../platform/window/common/window.js';
-import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
+import { $, Dimension, EventHelper, EventType, addDisposableListener, append, getActiveDocument, getWindow, getWindowId, isAncestor, isHTMLElement, prepend, reset } from '../../../../base/browser/dom.js';
 import { StandardMouseEvent } from '../../../../base/browser/mouseEvent.js';
-import { IConfigurationService, IConfigurationChangeEvent } from '../../../../platform/configuration/common/configuration.js';
-import { DisposableStore, IDisposable, MutableDisposable } from '../../../../base/common/lifecycle.js';
-import { IBrowserWorkbenchEnvironmentService } from '../../../services/environment/browser/environmentService.js';
-import { IThemeService } from '../../../../platform/theme/common/themeService.js';
-import { TITLE_BAR_ACTIVE_BACKGROUND, TITLE_BAR_ACTIVE_FOREGROUND, TITLE_BAR_INACTIVE_FOREGROUND, TITLE_BAR_INACTIVE_BACKGROUND, TITLE_BAR_BORDER, WORKBENCH_BACKGROUND } from '../../../common/theme.js';
-import { isMacintosh, isWindows, isLinux, isWeb, isNative, platformLocale } from '../../../../base/common/platform.js';
-import { Color } from '../../../../base/common/color.js';
-import { EventType, EventHelper, Dimension, append, $, addDisposableListener, prepend, reset, getWindow, getWindowId, isAncestor, getActiveDocument, isHTMLElement } from '../../../../base/browser/dom.js';
-import { CustomMenubarControl } from './menubarControl.js';
-import { IInstantiationService, ServicesAccessor } from '../../../../platform/instantiation/common/instantiation.js';
-import { Emitter, Event } from '../../../../base/common/event.js';
-import { IStorageService, StorageScope } from '../../../../platform/storage/common/storage.js';
-import { Parts, IWorkbenchLayoutService, ActivityBarPosition, LayoutSettings, EditorActionsLocation, EditorTabsMode } from '../../../services/layout/browser/layoutService.js';
-import { createActionViewItem, fillInActionBarActions } from '../../../../platform/actions/browser/menuEntryActionViewItem.js';
-import { Action2, IMenu, IMenuService, MenuId, registerAction2 } from '../../../../platform/actions/common/actions.js';
-import { IContextKey, IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
-import { IHostService } from '../../../services/host/browser/host.js';
-import { WindowTitle } from './windowTitle.js';
-import { CommandCenterControl } from './commandCenterControl.js';
-import { Categories } from '../../../../platform/action/common/actionCommonCategories.js';
-import { WorkbenchToolBar } from '../../../../platform/actions/browser/toolbar.js';
-import { ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID } from '../../../common/activity.js';
-import { AccountsActivityActionViewItem, isAccountsActionVisible, SimpleAccountActivityActionViewItem, SimpleGlobalActivityActionViewItem } from '../globalCompositeBar.js';
-import { HoverPosition } from '../../../../base/browser/ui/hover/hoverWidget.js';
-import { IEditorGroupsContainer, IEditorGroupsService } from '../../../services/editor/common/editorGroupsService.js';
-import { ActionRunner, IAction } from '../../../../base/common/actions.js';
-import { IEditorService } from '../../../services/editor/common/editorService.js';
 import { ActionsOrientation, IActionViewItem, prepareActions } from '../../../../base/browser/ui/actionbar/actionbar.js';
-import { EDITOR_CORE_NAVIGATION_COMMANDS } from '../editor/editorCommands.js';
-import { AnchorAlignment } from '../../../../base/browser/ui/contextview/contextview.js';
-import { EditorPane } from '../editor/editorPane.js';
-import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
-import { ResolvedKeybinding } from '../../../../base/common/keybindings.js';
-import { EditorCommandsContextActionRunner } from '../editor/editorTabsControl.js';
-import { IEditorCommandsContext, IEditorPartOptionsChangeEvent, IToolbarActions } from '../../../common/editor.js';
-import { CodeWindow, mainWindow } from '../../../../base/browser/window.js';
-import { ACCOUNTS_ACTIVITY_TILE_ACTION, GLOBAL_ACTIVITY_TITLE_ACTION } from './titlebarActions.js';
-import { IView } from '../../../../base/browser/ui/grid/grid.js';
-import { createInstantHoverDelegate } from '../../../../base/browser/ui/hover/hoverDelegateFactory.js';
 import { IBaseActionViewItemOptions } from '../../../../base/browser/ui/actionbar/actionViewItems.js';
+import { AnchorAlignment } from '../../../../base/browser/ui/contextview/contextview.js';
+import { IView } from '../../../../base/browser/ui/grid/grid.js';
 import { IHoverDelegate } from '../../../../base/browser/ui/hover/hoverDelegate.js';
-import { CommandsRegistry } from '../../../../platform/commands/common/commands.js';
+import { createInstantHoverDelegate } from '../../../../base/browser/ui/hover/hoverDelegateFactory.js';
+import { HoverPosition } from '../../../../base/browser/ui/hover/hoverWidget.js';
+import { CodeWindow, mainWindow } from '../../../../base/browser/window.js';
+import { ActionRunner, IAction } from '../../../../base/common/actions.js';
+import { Color } from '../../../../base/common/color.js';
 import { safeIntl } from '../../../../base/common/date.js';
+import { Emitter, Event } from '../../../../base/common/event.js';
+import { ResolvedKeybinding } from '../../../../base/common/keybindings.js';
+import { DisposableStore, IDisposable, MutableDisposable } from '../../../../base/common/lifecycle.js';
+import { isLinux, isMacintosh, isNative, isWeb, isWindows, platformLocale } from '../../../../base/common/platform.js';
+import { localize, localize2 } from '../../../../nls.js';
+import { Categories } from '../../../../platform/action/common/actionCommonCategories.js';
+import { createActionViewItem, fillInActionBarActions } from '../../../../platform/actions/browser/menuEntryActionViewItem.js';
+import { WorkbenchToolBar } from '../../../../platform/actions/browser/toolbar.js';
+import { Action2, IMenu, IMenuService, MenuId, registerAction2 } from '../../../../platform/actions/common/actions.js';
+import { CommandsRegistry } from '../../../../platform/commands/common/commands.js';
+import { IConfigurationChangeEvent, IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
+import { IContextKey, IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
+import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
+import { IInstantiationService, ServicesAccessor } from '../../../../platform/instantiation/common/instantiation.js';
+import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
+import { IStorageService, StorageScope } from '../../../../platform/storage/common/storage.js';
+import { IThemeService } from '../../../../platform/theme/common/themeService.js';
+import { DEFAULT_CUSTOM_TITLEBAR_HEIGHT, MenuBarVisibility, MenuSettings, TitlebarStyle, WindowControlsStyle, getMenuBarVisibility, getTitleBarStyle, getWindowControlsStyle, hasCustomTitlebar, hasNativeMenu, hasNativeTitlebar } from '../../../../platform/window/common/window.js';
+import { ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID } from '../../../common/activity.js';
 import { IsCompactTitleBarContext, TitleBarVisibleContext } from '../../../common/contextkeys.js';
+import { IEditorCommandsContext, IEditorPartOptionsChangeEvent, IToolbarActions } from '../../../common/editor.js';
+import { TITLE_BAR_ACTIVE_BACKGROUND, TITLE_BAR_ACTIVE_FOREGROUND, TITLE_BAR_BORDER, TITLE_BAR_INACTIVE_BACKGROUND, TITLE_BAR_INACTIVE_FOREGROUND, WORKBENCH_BACKGROUND } from '../../../common/theme.js';
+import { IEditorGroupsContainer, IEditorGroupsService } from '../../../services/editor/common/editorGroupsService.js';
+import { IEditorService } from '../../../services/editor/common/editorService.js';
+import { IBrowserWorkbenchEnvironmentService } from '../../../services/environment/browser/environmentService.js';
+import { IHostService } from '../../../services/host/browser/host.js';
+import { ActivityBarPosition, EditorActionsLocation, EditorTabsMode, IWorkbenchLayoutService, LayoutSettings, Parts } from '../../../services/layout/browser/layoutService.js';
+import { ITitleService } from '../../../services/title/browser/titleService.js';
+import { MultiWindowParts, Part } from '../../part.js';
+import { EDITOR_CORE_NAVIGATION_COMMANDS } from '../editor/editorCommands.js';
+import { EditorPane } from '../editor/editorPane.js';
+import { EditorCommandsContextActionRunner } from '../editor/editorTabsControl.js';
+import { AccountsActivityActionViewItem, SimpleAccountActivityActionViewItem, SimpleGlobalActivityActionViewItem, isAccountsActionVisible } from '../globalCompositeBar.js';
+import { CommandCenterControl } from './commandCenterControl.js';
+import './media/titlebarpart.css';
+import { CustomMenubarControl } from './menubarControl.js';
+import { ACCOUNTS_ACTIVITY_TILE_ACTION, GLOBAL_ACTIVITY_TITLE_ACTION } from './titlebarActions.js';
+import { WindowTitle } from './windowTitle.js';
 
 export interface ITitleVariable {
 	readonly name: string;
@@ -454,11 +454,6 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 		this.centerContent = append(this.rootContainer, $('.titlebar-center'));
 		this.rightContent = append(this.rootContainer, $('.titlebar-right'));
 
-		// App Icon (Windows, Linux)
-		if ((isWindows || isLinux) && !hasNativeTitlebar(this.configurationService, this.titleBarStyle)) {
-			this.appIcon = prepend(this.leftContent, $('a.window-appicon'));
-		}
-
 		// Draggable region that we can manipulate for #52522
 		this.dragRegion = prepend(this.rootContainer, $('div.titlebar-drag-region'));
 
@@ -517,6 +512,11 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 					this.windowControlsContainer.classList.add('wco-enabled');
 				}
 			}
+		}
+
+		// Jiraya logo (top right) — show whenever using custom title bar
+		if (!hasNativeTitlebar(this.configurationService, this.titleBarStyle)) {
+			this.appIcon = append(this.rightContent, $('a.window-appicon.jiraya-appicon', { role: 'button', 'aria-label': localize('jirayaLogo', 'Jiraya') }));
 		}
 
 		// Context menu over title bar: depending on the OS and the location of the click this will either be

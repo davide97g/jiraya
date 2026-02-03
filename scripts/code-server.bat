@@ -13,7 +13,7 @@ set VSCODE_DEV=1
 
 :: Get electron, compile, built-in extensions
 if "%VSCODE_SKIP_PRELAUNCH%"=="" (
-	node build/lib/preLaunch.ts
+	node --experimental-strip-types build/lib/preLaunch.ts
 )
 
 :: Node executable
