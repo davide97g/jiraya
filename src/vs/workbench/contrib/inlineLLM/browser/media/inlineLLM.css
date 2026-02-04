@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 .inline-llm-widget-container {
-	padding: 8px;
+	padding: 8px 16px;
 	box-sizing: border-box;
+	border-radius: 8px;
 }
 
 .inline-llm-row {
@@ -24,7 +25,7 @@
 	border: 1px solid var(--vscode-input-border);
 	background: var(--vscode-input-background);
 	color: var(--vscode-input-foreground);
-	border-radius: 2px;
+	border-radius: 8px;
 }
 
 .inline-llm-input::placeholder {
@@ -47,7 +48,7 @@
 	border: 1px solid var(--vscode-button-border);
 	background: var(--vscode-button-background);
 	color: var(--vscode-button-foreground);
-	border-radius: 2px;
+	border-radius: 8px;
 	cursor: pointer;
 }
 
@@ -77,5 +78,9 @@
 }
 
 .inline-llm-zone-widget .zone-widget-container {
-	border-top-color: var(--vscode-editorWidget-border);
+	border-color: rgb(0, 122, 204);
+	border: 1px solid rgb(0, 122, 204);
+	border-radius: 8px;
+	overflow: hidden;
+	margin: 6px;
 }

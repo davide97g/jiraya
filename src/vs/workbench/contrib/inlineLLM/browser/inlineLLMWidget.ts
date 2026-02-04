@@ -77,9 +77,9 @@ export class InlineLLMZoneWidget extends ZoneWidget {
 
 		this._buttonRow = dom.append(row, dom.$('.inline-llm-buttons'));
 		this._runBtn = document.createElement('button');
-		this._runBtn.textContent = localize('inlineLLM.run', "Run");
+		this._runBtn.textContent = localize('inlineLLM.ask', "Ask");
 		this._runBtn.className = 'inline-llm-btn';
-		this._runBtn.setAttribute('aria-label', localize('inlineLLM.runAria', "Run Inline LLM"));
+		this._runBtn.setAttribute('aria-label', localize('inlineLLM.askAria', "Ask Inline LLM"));
 		this._cancelBtn = document.createElement('button');
 		this._cancelBtn.textContent = localize('inlineLLM.cancel', "Cancel");
 		this._cancelBtn.className = 'inline-llm-btn';
@@ -184,6 +184,8 @@ export class InlineLLMZoneWidget extends ZoneWidget {
 			this._validatedOutput = result.output;
 			this._setStatus(result.output.explanation || localize('inlineLLM.ready', "Review and Apply or Reject."));
 			this._showApplyReject(true);
+			// Display diffs in the editor
+			await this._displayDiffsInEditor();
 		} catch (e) {
 			const msg = e instanceof Error ? e.message : String(e);
 			this._notificationService.error(localize('inlineLLM.error', "Inline LLM: {0}", msg));
@@ -219,6 +221,23 @@ export class InlineLLMZoneWidget extends ZoneWidget {
 			return;
 		}
 		this._options.onClose();
+	}
+
+	private async _displayDiffsInEditor(): Promise<void> {
+		if (!this._validatedOutput || !this._contextFileUri) {
+			return;
+		}
+
+		// Show preview of the changes using bulk edit service
+		// This will display the diffs in a preview editor
+		await applyInlineLLMEdits(
+			this._validatedOutput,
+			this._contextFileUri,
+			this._workspaceContextService,
+			this._modelService,
+			this._bulkEditService,
+			{ showPreview: true }
+		);
 	}
 
 	private _handleReject(): void {
