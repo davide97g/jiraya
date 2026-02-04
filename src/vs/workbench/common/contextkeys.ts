@@ -4,18 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DisposableStore } from '../../base/common/lifecycle.js';
-import { URI } from '../../base/common/uri.js';
-import { localize } from '../../nls.js';
-import { IContextKeyService, IContextKey, RawContextKey } from '../../platform/contextkey/common/contextkey.js';
-import { basename, dirname, extname, isEqual } from '../../base/common/resources.js';
-import { ILanguageService } from '../../editor/common/languages/language.js';
-import { IFileService } from '../../platform/files/common/files.js';
-import { IModelService } from '../../editor/common/services/model.js';
 import { Schemas } from '../../base/common/network.js';
-import { EditorInput } from './editor/editorInput.js';
+import { basename, dirname, extname, isEqual } from '../../base/common/resources.js';
+import { URI } from '../../base/common/uri.js';
+import { ILanguageService } from '../../editor/common/languages/language.js';
+import { IModelService } from '../../editor/common/services/model.js';
+import { localize } from '../../nls.js';
+import { IContextKey, IContextKeyService, RawContextKey } from '../../platform/contextkey/common/contextkey.js';
+import { IFileService } from '../../platform/files/common/files.js';
 import { IEditorResolverService } from '../services/editor/common/editorResolverService.js';
 import { DEFAULT_EDITOR_ASSOCIATION } from './editor.js';
 import { DiffEditorInput } from './editor/diffEditorInput.js';
+import { EditorInput } from './editor/editorInput.js';
 
 //#region < --- Workbench --- >
 
@@ -36,6 +36,8 @@ export const TemporaryWorkspaceContext = new RawContextKey<boolean>('temporaryWo
 export const IsAgentSessionsWorkspaceContext = new RawContextKey<boolean>('isAgentSessionsWorkspace', false, localize('isAgentSessionsWorkspace', "Whether the current workspace is the agent sessions workspace."));
 
 export const WorkbenchModeContext = new RawContextKey<string>('workbenchMode', '', localize('workbenchMode', "The current workbench mode."));
+
+export const ZenExecutionModeContext = new RawContextKey<string>('zenExecutionMode', 'NORMAL', localize('zenExecutionMode', "The current Zen/Execution/Review mode: NORMAL, ZEN, EXECUTION, or REVIEW."));
 
 export const HasWebFileSystemAccess = new RawContextKey<boolean>('hasWebFileSystemAccess', false, true); // Support for FileSystemAccess web APIs (https://wicg.github.io/file-system-access)
 

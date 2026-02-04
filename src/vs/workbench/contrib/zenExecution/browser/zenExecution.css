@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.zen-execution-placeholder {
+	padding: 16px;
+	text-align: center;
+	color: var(--vscode-descriptionForeground);
+}
+
+.zen-execution-placeholder p {
+	margin: 0;
+	font-size: 13px;
+}
+
+/* Breathing dot for Execution mode - status bar entry id zenExecution.breathingDot */
+.monaco-workbench .part.statusbar .statusbar-item#zenExecution-breathingDot .codicon {
+	animation: zen-execution-breathe 1.5s ease-in-out infinite;
+}
+
+@keyframes zen-execution-breathe {
+	0%, 100% { opacity: 0.4; }
+	50% { opacity: 1; }
+}

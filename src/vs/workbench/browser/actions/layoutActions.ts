@@ -3,38 +3,38 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ILocalizedString, localize, localize2 } from '../../../nls.js';
-import { MenuId, MenuRegistry, registerAction2, Action2 } from '../../../platform/actions/common/actions.js';
-import { Categories } from '../../../platform/action/common/actionCommonCategories.js';
-import { IConfigurationService } from '../../../platform/configuration/common/configuration.js';
 import { alert } from '../../../base/browser/ui/aria/aria.js';
-import { EditorActionsLocation, EditorTabsMode, IWorkbenchLayoutService, LayoutSettings, Parts, Position, ZenModeSettings, positionToString } from '../../services/layout/browser/layoutService.js';
-import { ServicesAccessor, IInstantiationService } from '../../../platform/instantiation/common/instantiation.js';
-import { KeyMod, KeyCode, KeyChord } from '../../../base/common/keyCodes.js';
-import { isWindows, isLinux, isWeb, isMacintosh, isNative } from '../../../base/common/platform.js';
-import { IsMacNativeContext } from '../../../platform/contextkey/common/contextkeys.js';
-import { KeybindingsRegistry, KeybindingWeight } from '../../../platform/keybinding/common/keybindingsRegistry.js';
+import { mainWindow } from '../../../base/browser/window.js';
+import { Codicon } from '../../../base/common/codicons.js';
+import { KeyChord, KeyCode, KeyMod } from '../../../base/common/keyCodes.js';
+import { DisposableStore } from '../../../base/common/lifecycle.js';
+import { isLinux, isMacintosh, isNative, isWeb, isWindows } from '../../../base/common/platform.js';
+import { ThemeIcon } from '../../../base/common/themables.js';
+import { ILocalizedString, localize, localize2 } from '../../../nls.js';
+import { ICommandActionTitle } from '../../../platform/action/common/action.js';
+import { Categories } from '../../../platform/action/common/actionCommonCategories.js';
+import { Action2, MenuId, MenuRegistry, registerAction2 } from '../../../platform/actions/common/actions.js';
+import { ICommandService } from '../../../platform/commands/common/commands.js';
+import { IConfigurationService } from '../../../platform/configuration/common/configuration.js';
 import { ContextKeyExpr, ContextKeyExpression, IContextKeyService } from '../../../platform/contextkey/common/contextkey.js';
-import { IViewDescriptorService, ViewContainerLocation, IViewDescriptor, ViewContainerLocationToString } from '../../common/views.js';
-import { IViewsService } from '../../services/views/common/viewsService.js';
-import { QuickPickItem, IQuickInputService, IQuickPickItem, IQuickPickSeparator, IQuickPick } from '../../../platform/quickinput/common/quickInput.js';
+import { IsMacNativeContext } from '../../../platform/contextkey/common/contextkeys.js';
 import { IDialogService } from '../../../platform/dialogs/common/dialogs.js';
+import { IInstantiationService, ServicesAccessor } from '../../../platform/instantiation/common/instantiation.js';
+import { IKeybindingService } from '../../../platform/keybinding/common/keybinding.js';
+import { KeybindingsRegistry, KeybindingWeight } from '../../../platform/keybinding/common/keybindingsRegistry.js';
+import { QuickInputAlignmentContextKey } from '../../../platform/quickinput/browser/quickInput.js';
+import { IQuickInputService, IQuickPick, IQuickPickItem, IQuickPickSeparator, QuickPickItem } from '../../../platform/quickinput/common/quickInput.js';
+import { registerIcon } from '../../../platform/theme/common/iconRegistry.js';
+import { MenuSettings, TitlebarStyle } from '../../../platform/window/common/window.js';
+import { AuxiliaryBarVisibleContext, FocusedViewContext, InEditorZenModeContext, IsAuxiliaryWindowContext, IsAuxiliaryWindowFocusedContext, IsMainEditorCenteredLayoutContext, IsMainWindowFullscreenContext, MainEditorAreaVisibleContext, PanelAlignmentContext, PanelPositionContext, PanelVisibleContext, SideBarVisibleContext, TitleBarStyleContext } from '../../common/contextkeys.js';
+import { IViewDescriptor, IViewDescriptorService, ViewContainerLocation, ViewContainerLocationToString } from '../../common/views.js';
+import { IEditorGroupsService } from '../../services/editor/common/editorGroupsService.js';
+import { EditorActionsLocation, EditorTabsMode, IWorkbenchLayoutService, LayoutSettings, Parts, Position, positionToString, ZenModeSettings } from '../../services/layout/browser/layoutService.js';
 import { IPaneCompositePartService } from '../../services/panecomposite/browser/panecomposite.js';
+import { IPreferencesService } from '../../services/preferences/common/preferences.js';
+import { IViewsService } from '../../services/views/common/viewsService.js';
 import { ToggleAuxiliaryBarAction } from '../parts/auxiliarybar/auxiliaryBarActions.js';
 import { TogglePanelAction } from '../parts/panel/panelActions.js';
-import { ICommandService } from '../../../platform/commands/common/commands.js';
-import { AuxiliaryBarVisibleContext, PanelAlignmentContext, PanelVisibleContext, SideBarVisibleContext, FocusedViewContext, InEditorZenModeContext, IsMainEditorCenteredLayoutContext, MainEditorAreaVisibleContext, IsMainWindowFullscreenContext, PanelPositionContext, IsAuxiliaryWindowFocusedContext, TitleBarStyleContext, IsAuxiliaryWindowContext } from '../../common/contextkeys.js';
-import { Codicon } from '../../../base/common/codicons.js';
-import { ThemeIcon } from '../../../base/common/themables.js';
-import { DisposableStore } from '../../../base/common/lifecycle.js';
-import { registerIcon } from '../../../platform/theme/common/iconRegistry.js';
-import { ICommandActionTitle } from '../../../platform/action/common/action.js';
-import { mainWindow } from '../../../base/browser/window.js';
-import { IKeybindingService } from '../../../platform/keybinding/common/keybinding.js';
-import { MenuSettings, TitlebarStyle } from '../../../platform/window/common/window.js';
-import { IPreferencesService } from '../../services/preferences/common/preferences.js';
-import { QuickInputAlignmentContextKey } from '../../../platform/quickinput/browser/quickInput.js';
-import { IEditorGroupsService } from '../../services/editor/common/editorGroupsService.js';
 
 // Register Icons
 const menubarIcon = registerIcon('menuBar', Codicon.layoutMenubar, localize('menuBarIcon', "Represents the menu bar"));
@@ -97,11 +97,12 @@ registerAction2(class extends Action2 {
 const sidebarPositionConfigurationKey = 'workbench.sideBar.location';
 
 class MoveSidebarPositionAction extends Action2 {
-	constructor(id: string, title: ICommandActionTitle, private readonly position: Position) {
+	constructor(id: string, title: ICommandActionTitle, private readonly position: Position, options?: { precondition?: ContextKeyExpression }) {
 		super({
 			id,
 			title,
-			f1: false
+			f1: false,
+			...options
 		});
 	}
 
@@ -120,7 +121,7 @@ class MoveSidebarRightAction extends MoveSidebarPositionAction {
 	static readonly ID = 'workbench.action.moveSideBarRight';
 
 	constructor() {
-		super(MoveSidebarRightAction.ID, localize2('moveSidebarRight', "Move Primary Side Bar Right"), Position.RIGHT);
+		super(MoveSidebarRightAction.ID, localize2('moveSidebarRight', "Move Primary Side Bar Right"), Position.RIGHT, { precondition: ContextKeyExpr.notEquals('zenExecutionMode', 'EXECUTION') });
 	}
 }
 
@@ -299,6 +300,7 @@ export class ToggleSidebarVisibilityAction extends Action2 {
 			},
 			category: Categories.View,
 			f1: true,
+			precondition: ContextKeyExpr.notEquals('zenExecutionMode', 'EXECUTION'),
 			keybinding: {
 				weight: KeybindingWeight.WorkbenchContrib,
 				primary: KeyMod.CtrlCmd | KeyCode.KeyB
