@@ -4,16 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from '../../../../nls.js';
+import { registerAction2 } from '../../../../platform/actions/common/actions.js';
 import { EditPresentationTypes, Extensions, IConfigurationRegistry } from '../../../../platform/configuration/common/configurationRegistry.js';
 import { InstantiationType, registerSingleton } from '../../../../platform/instantiation/common/extensions.js';
 import { Registry } from '../../../../platform/registry/common/platform.js';
-import { registerAction2 } from '../../../../platform/actions/common/actions.js';
-import { InlineLLMAction } from './inlineLLMActions.js';
-import { IInlineLLMService } from './inlineLLMService.js';
-import { InlineLLMServiceImpl } from './inlineLLMService.js';
 import { InlineLLMConfigKeys } from '../common/inlineLLM.js';
+import { InlineLLMAction } from './inlineLLMActions.js';
+import { IInlineLLMChangesService } from './inlineLLMChangesService.js';
+import { InlineLLMChangesServiceImpl } from './inlineLLMChangesServiceImpl.js';
+import { IInlineLLMService, InlineLLMServiceImpl } from './inlineLLMService.js';
 
 registerSingleton(IInlineLLMService, InlineLLMServiceImpl, InstantiationType.Delayed);
+registerSingleton(IInlineLLMChangesService, InlineLLMChangesServiceImpl, InstantiationType.Delayed);
 
 Registry.as<IConfigurationRegistry>(Extensions.Configuration).registerConfiguration({
 	id: 'inlineLLM',

@@ -1,0 +1,52 @@
+{
+	"name": "openai-language-model",
+	"displayName": "OpenAI Language Model Provider",
+	"description": "Provides OpenAI language models for chat and agents",
+	"version": "0.0.1",
+	"publisher": "jiraya",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onLanguageModelChatProvider:openai"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"languageModelChatProviders": [
+			{
+				"vendor": "openai",
+				"displayName": "OpenAI",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "OpenAI API key",
+							"secret": true
+						},
+						"apiBaseUrl": {
+							"type": "string",
+							"description": "OpenAI API base URL (e.g. https://api.openai.com)",
+							"default": "https://api.openai.com"
+						}
+					},
+					"required": [
+						"apiKey"
+					]
+				}
+			}
+		]
+	},
+	"scripts": {
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/node": "^20.0.0",
+		"@types/vscode": "^1.90.0",
+		"typescript": "^5.0.0"
+	}
+}

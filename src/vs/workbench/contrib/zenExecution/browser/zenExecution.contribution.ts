@@ -19,6 +19,7 @@ import { IViewContainersRegistry, IViewsRegistry, Extensions as ViewContainerExt
 import { IStatusbarService, StatusbarAlignment } from '../../../services/statusbar/browser/statusbar.js';
 import { ZenExecutionServiceImpl } from '../../../services/zenExecution/browser/zenExecutionService.js';
 import { IZenExecutionController, ZenExecutionMode } from '../../../services/zenExecution/common/zenExecution.js';
+import './jirayaScrollView.css';
 import { JIRAYA_SCROLL_VIEW_ID, JirayaScrollView } from './jirayaScrollView.js';
 import { WORK_ARTIFACTS_VIEW_ID, WorkArtifactsView } from './workArtifactsView.js';
 import './zenExecution.css';

@@ -17,6 +17,7 @@ import { localize } from '../../../../nls.js';
 import { INotificationService } from '../../../../platform/notification/common/notification.js';
 import { IWorkspaceContextService } from '../../../../platform/workspace/common/workspace.js';
 import { IInlineLLMOutput } from '../common/inlineLLM.js';
+import { IInlineLLMChangesService } from './inlineLLMChangesService.js';
 import { resolveInlineLLMContext } from './inlineLLMContextResolver.js';
 import { applyInlineLLMEdits } from './inlineLLMEditApplier.js';
 import { validateInlineLLMOutput } from './inlineLLMOutputValidator.js';
@@ -46,6 +47,7 @@ export class InlineLLMZoneWidget extends ZoneWidget {
 		private readonly _selection: IRange,
 		private readonly _options: IInlineLLMZoneWidgetOptions,
 		@IInlineLLMService private readonly _llmService: IInlineLLMService,
+		@IInlineLLMChangesService private readonly _changesService: IInlineLLMChangesService,
 		@IWorkspaceContextService private readonly _workspaceContextService: IWorkspaceContextService,
 		@IOutlineModelService private readonly _outlineModelService: IOutlineModelService,
 		@IModelService private readonly _modelService: IModelService,
@@ -184,6 +186,11 @@ export class InlineLLMZoneWidget extends ZoneWidget {
 			this._validatedOutput = result.output;
 			this._setStatus(result.output.explanation || localize('inlineLLM.ready', "Review and Apply or Reject."));
 			this._showApplyReject(true);
+
+			// Notify changes service for Jiraya Scroll
+			const workspaceFolder = this._workspaceContextService.getWorkspace().folders[0]?.uri;
+			await this._changesService.setChanges(result.output, this._contextFileUri!, workspaceFolder);
+
 			// Display diffs in the editor
 			await this._displayDiffsInEditor();
 		} catch (e) {
@@ -199,6 +206,7 @@ export class InlineLLMZoneWidget extends ZoneWidget {
 
 	private _handleCancel(): void {
 		this._cts?.cancel();
+		this._changesService.clearChanges();
 		this._options.onClose();
 	}
 
@@ -242,6 +250,7 @@ export class InlineLLMZoneWidget extends ZoneWidget {
 
 	private _handleReject(): void {
 		this._validatedOutput = undefined;
+		this._changesService.clearChanges();
 		this._showApplyReject(false);
 		this._setStatus('');
 	}

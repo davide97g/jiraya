@@ -4,11 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CancellationToken } from '../../../../base/common/cancellation.js';
-import { createDecorator } from '../../../../platform/instantiation/common/instantiation.js';
-import { asText, isSuccess } from '../../../../platform/request/common/request.js';
 import { IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
-import { IRequestService } from '../../../../platform/request/common/request.js';
+import { createDecorator } from '../../../../platform/instantiation/common/instantiation.js';
 import { ILogService } from '../../../../platform/log/common/log.js';
+import { asText, IRequestService, isSuccess } from '../../../../platform/request/common/request.js';
 import { IInlineLLMContext, InlineLLMConfigKeys } from '../common/inlineLLM.js';
 
 export const IInlineLLMService = createDecorator<IInlineLLMService>('IInlineLLMService');
@@ -84,7 +83,7 @@ export class InlineLLMServiceImpl implements IInlineLLMService {
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@IRequestService private readonly _requestService: IRequestService,
 		@ILogService private readonly _logService: ILogService,
-	) {}
+	) { }
 
 	async request(context: IInlineLLMContext, userPrompt: string, token: CancellationToken): Promise<string> {
 		const baseUrl = this._configurationService.getValue<string>(InlineLLMConfigKeys.ApiBaseUrl)?.trim();

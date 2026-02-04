@@ -544,6 +544,11 @@ export class ChatSetupContribution extends Disposable implements IWorkbenchContr
 	}
 
 	private async checkExtensionInstallation(context: ChatEntitlementContext): Promise<void> {
+		// If no chatExtensionId is configured, mark as installed (using custom models)
+		if (!defaultChat.chatExtensionId) {
+			context.update({ installed: true, disabled: false, untrusted: false });
+			return;
+		}
 
 		// When developing extensions, await registration and then check
 		if (this.environmentService.isExtensionDevelopment) {

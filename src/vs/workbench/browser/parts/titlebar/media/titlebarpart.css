@@ -292,15 +292,16 @@
 }
 
 .monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .actions-container .action-item.jiraya-appicon .action-label {
-	width: 22px;
-	height: 22px;
-	min-width: 22px;
+	width: 14px;
+	height: 14px;
+	min-width: 14px;
 	padding: 0;
-	background-image: url('../../../media/jiraya-logo.png');
+	background-image: url('../../../media/jiraya-logo-bw.png');
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: cover;
 	border-radius: 50%;
+	opacity: 0.75;
 	box-sizing: border-box;
 	cursor: pointer;
 	text-decoration: none;
