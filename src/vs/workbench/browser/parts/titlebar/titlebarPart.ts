@@ -26,7 +26,7 @@ import { Categories } from '../../../../platform/action/common/actionCommonCateg
 import { createActionViewItem, fillInActionBarActions } from '../../../../platform/actions/browser/menuEntryActionViewItem.js';
 import { WorkbenchToolBar } from '../../../../platform/actions/browser/toolbar.js';
 import { Action2, IMenu, IMenuService, MenuId, registerAction2 } from '../../../../platform/actions/common/actions.js';
-import { CommandsRegistry } from '../../../../platform/commands/common/commands.js';
+import { CommandsRegistry, ICommandService } from '../../../../platform/commands/common/commands.js';
 import { IConfigurationChangeEvent, IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
 import { IContextKey, IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
 import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
@@ -306,7 +306,8 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 		@IHostService private readonly hostService: IHostService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IMenuService private readonly menuService: IMenuService,
-		@IKeybindingService private readonly keybindingService: IKeybindingService
+		@IKeybindingService private readonly keybindingService: IKeybindingService,
+		@ICommandService private readonly commandService: ICommandService
 	) {
 		super(id, { hasTitle: false }, themeService, storageService, layoutService);
 
@@ -476,6 +477,25 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 			this.actionToolBarElement = append(this.rightContent, $('div.action-toolbar-container'));
 			this.createActionToolBar();
 			this.createActionToolBarMenus();
+
+			// Jiraya logo inside actions-container (same row as other title bar icons), opens settings on click
+			if (!hasNativeTitlebar(this.configurationService, this.titleBarStyle)) {
+				const actionsContainer = this.actionToolBarElement.querySelector('.actions-container') as HTMLElement | null;
+				if (actionsContainer) {
+					const jirayaItem = $('li.action-item.icon.jiraya-appicon');
+					this.appIcon = append(jirayaItem, $('a.action-label', { role: 'button', 'aria-label': localize('jirayaLogoOpenSettings', 'Jiraya — Open Settings'), href: '#' }));
+					append(actionsContainer, jirayaItem);
+					this._register(addDisposableListener(this.appIcon, EventType.MOUSE_DOWN, e => {
+						EventHelper.stop(e, true);
+						e.preventDefault();
+					}, true));
+					this._register(addDisposableListener(this.appIcon, EventType.CLICK, e => {
+						EventHelper.stop(e, true);
+						e.preventDefault();
+						this.commandService.executeCommand('workbench.action.openSettings');
+					}));
+				}
+			}
 		}
 
 		// Window Controls Container
@@ -512,11 +532,6 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 					this.windowControlsContainer.classList.add('wco-enabled');
 				}
 			}
-		}
-
-		// Jiraya logo (top right) — show whenever using custom title bar
-		if (!hasNativeTitlebar(this.configurationService, this.titleBarStyle)) {
-			this.appIcon = append(this.rightContent, $('a.window-appicon.jiraya-appicon', { role: 'button', 'aria-label': localize('jirayaLogo', 'Jiraya') }));
 		}
 
 		// Context menu over title bar: depending on the OS and the location of the click this will either be
@@ -908,8 +923,9 @@ export class MainBrowserTitlebarPart extends BrowserTitlebarPart {
 		@IEditorService editorService: IEditorService,
 		@IMenuService menuService: IMenuService,
 		@IKeybindingService keybindingService: IKeybindingService,
+		@ICommandService commandService: ICommandService,
 	) {
-		super(Parts.TITLEBAR_PART, mainWindow, editorGroupService.mainPart, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, editorService, menuService, keybindingService);
+		super(Parts.TITLEBAR_PART, mainWindow, editorGroupService.mainPart, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, editorService, menuService, keybindingService, commandService);
 	}
 }
 
@@ -943,9 +959,10 @@ export class AuxiliaryBrowserTitlebarPart extends BrowserTitlebarPart implements
 		@IEditorService editorService: IEditorService,
 		@IMenuService menuService: IMenuService,
 		@IKeybindingService keybindingService: IKeybindingService,
+		@ICommandService commandService: ICommandService,
 	) {
 		const id = AuxiliaryBrowserTitlebarPart.COUNTER++;
-		super(`workbench.parts.auxiliaryTitle.${id}`, getWindow(container), editorGroupsContainer, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, editorService, menuService, keybindingService);
+		super(`workbench.parts.auxiliaryTitle.${id}`, getWindow(container), editorGroupsContainer, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, editorService, menuService, keybindingService, commandService);
 	}
 
 	override get preventZoom(): boolean {

@@ -94,6 +94,8 @@
 	min-width: min-content;
 	flex-grow: 2;
 	justify-content: flex-end;
+	position: relative;
+	z-index: 1;
 }
 
 .monaco-workbench .part.titlebar > .titlebar-container:not(.has-center) > .titlebar-left {
@@ -107,7 +109,9 @@
 
 .monaco-workbench .part.titlebar > .titlebar-container:not(.has-center) > .titlebar-right {
 	flex: 0 0 auto;
-	padding-left: 16px; /* ensure there is some space between title and controls */
+	padding-left: 16px; /* ensure some space between title and controls */
+	position: relative;
+	z-index: 1;
 }
 
 /* Window title text */
@@ -280,22 +284,34 @@
 	display: none;
 }
 
-/* Jiraya logo in title bar (top right) */
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .window-appicon.jiraya-appicon {
-	width: 35px;
-	height: 100%;
-	min-width: 35px;
-	flex-shrink: 0;
-	position: relative;
-	z-index: 2500;
-	-webkit-app-region: no-drag;
+/* Jiraya logo inside actions-container (same row as other title bar icons) — rounded, opens settings on click */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .actions-container .action-item.jiraya-appicon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .actions-container .action-item.jiraya-appicon .action-label {
+	width: 22px;
+	height: 22px;
+	min-width: 22px;
+	padding: 0;
 	background-image: url('../../../media/jiraya-logo.png');
 	background-repeat: no-repeat;
 	background-position: center center;
-	background-size: 20px;
+	background-size: cover;
+	border-radius: 50%;
+	box-sizing: border-box;
+	cursor: pointer;
+	text-decoration: none;
+	color: inherit;
 }
 
-.monaco-workbench.fullscreen .part.titlebar > .titlebar-container > .titlebar-right > .window-appicon.jiraya-appicon {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .actions-container .action-item.jiraya-appicon .action-label:hover {
+	opacity: 0.9;
+}
+
+.monaco-workbench.fullscreen .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .actions-container .action-item.jiraya-appicon {
 	display: none;
 }
 
@@ -416,6 +432,11 @@
 .monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container:not(.has-no-actions) {
 	display: flex;
 	justify-content: center;
+}
+
+/* Show toolbar when it contains Jiraya icon even with no other actions */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container.has-no-actions:has(.jiraya-appicon) {
+	display: flex !important;
 }
 
 .monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .codicon {

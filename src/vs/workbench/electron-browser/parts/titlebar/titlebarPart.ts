@@ -3,31 +3,32 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event } from '../../../../base/common/event.js';
 import { getZoomFactor } from '../../../../base/browser/browser.js';
 import { $, addDisposableListener, append, EventType, getWindow, getWindowId, hide, show } from '../../../../base/browser/dom.js';
-import { IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
-import { IConfigurationService, IConfigurationChangeEvent } from '../../../../platform/configuration/common/configuration.js';
-import { IStorageService } from '../../../../platform/storage/common/storage.js';
-import { INativeWorkbenchEnvironmentService } from '../../../services/environment/electron-browser/environmentService.js';
-import { IHostService } from '../../../services/host/browser/host.js';
-import { isMacintosh, isWindows, isLinux, isTahoeOrNewer } from '../../../../base/common/platform.js';
-import { IMenuService, MenuId } from '../../../../platform/actions/common/actions.js';
-import { BrowserTitlebarPart, BrowserTitleService, IAuxiliaryTitlebarPart } from '../../../browser/parts/titlebar/titlebarPart.js';
-import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
-import { IThemeService } from '../../../../platform/theme/common/themeService.js';
-import { IWorkbenchLayoutService, Parts } from '../../../services/layout/browser/layoutService.js';
-import { INativeHostService } from '../../../../platform/native/common/native.js';
-import { hasNativeTitlebar, useWindowControlsOverlay, DEFAULT_CUSTOM_TITLEBAR_HEIGHT, hasNativeMenu } from '../../../../platform/window/common/window.js';
-import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
+import { CodeWindow, mainWindow } from '../../../../base/browser/window.js';
 import { Codicon } from '../../../../base/common/codicons.js';
+import { Event } from '../../../../base/common/event.js';
+import { isLinux, isMacintosh, isTahoeOrNewer, isWindows } from '../../../../base/common/platform.js';
 import { ThemeIcon } from '../../../../base/common/themables.js';
-import { NativeMenubarControl } from './menubarControl.js';
+import { IMenuService, MenuId } from '../../../../platform/actions/common/actions.js';
+import { ICommandService } from '../../../../platform/commands/common/commands.js';
+import { IConfigurationChangeEvent, IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
+import { IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
+import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
+import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
+import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
+import { INativeHostService } from '../../../../platform/native/common/native.js';
+import { IStorageService } from '../../../../platform/storage/common/storage.js';
+import { IThemeService } from '../../../../platform/theme/common/themeService.js';
+import { DEFAULT_CUSTOM_TITLEBAR_HEIGHT, hasNativeMenu, hasNativeTitlebar, useWindowControlsOverlay } from '../../../../platform/window/common/window.js';
+import { BrowserTitlebarPart, BrowserTitleService, IAuxiliaryTitlebarPart } from '../../../browser/parts/titlebar/titlebarPart.js';
+import { IsWindowAlwaysOnTopContext } from '../../../common/contextkeys.js';
 import { IEditorGroupsContainer, IEditorGroupsService } from '../../../services/editor/common/editorGroupsService.js';
 import { IEditorService } from '../../../services/editor/common/editorService.js';
-import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
-import { CodeWindow, mainWindow } from '../../../../base/browser/window.js';
-import { IsWindowAlwaysOnTopContext } from '../../../common/contextkeys.js';
+import { INativeWorkbenchEnvironmentService } from '../../../services/environment/electron-browser/environmentService.js';
+import { IHostService } from '../../../services/host/browser/host.js';
+import { IWorkbenchLayoutService, Parts } from '../../../services/layout/browser/layoutService.js';
+import { NativeMenubarControl } from './menubarControl.js';
 
 export class NativeTitlebarPart extends BrowserTitlebarPart {
 
@@ -76,9 +77,10 @@ export class NativeTitlebarPart extends BrowserTitlebarPart {
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService editorService: IEditorService,
 		@IMenuService menuService: IMenuService,
-		@IKeybindingService keybindingService: IKeybindingService
+		@IKeybindingService keybindingService: IKeybindingService,
+		@ICommandService commandService: ICommandService
 	) {
-		super(id, targetWindow, editorGroupsContainer, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, editorService, menuService, keybindingService);
+		super(id, targetWindow, editorGroupsContainer, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, editorService, menuService, keybindingService, commandService);
 
 		this.tahoeOrNewer = isTahoeOrNewer(environmentService.os.release);
 
@@ -300,9 +302,10 @@ export class MainNativeTitlebarPart extends NativeTitlebarPart {
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService editorService: IEditorService,
 		@IMenuService menuService: IMenuService,
-		@IKeybindingService keybindingService: IKeybindingService
+		@IKeybindingService keybindingService: IKeybindingService,
+		@ICommandService commandService: ICommandService
 	) {
-		super(Parts.TITLEBAR_PART, mainWindow, editorGroupService.mainPart, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, nativeHostService, editorGroupService, editorService, menuService, keybindingService);
+		super(Parts.TITLEBAR_PART, mainWindow, editorGroupService.mainPart, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, nativeHostService, editorGroupService, editorService, menuService, keybindingService, commandService);
 	}
 }
 
@@ -329,10 +332,11 @@ export class AuxiliaryNativeTitlebarPart extends NativeTitlebarPart implements I
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService editorService: IEditorService,
 		@IMenuService menuService: IMenuService,
-		@IKeybindingService keybindingService: IKeybindingService
+		@IKeybindingService keybindingService: IKeybindingService,
+		@ICommandService commandService: ICommandService
 	) {
 		const id = AuxiliaryNativeTitlebarPart.COUNTER++;
-		super(`workbench.parts.auxiliaryTitle.${id}`, getWindow(container), editorGroupsContainer, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, nativeHostService, editorGroupService, editorService, menuService, keybindingService);
+		super(`workbench.parts.auxiliaryTitle.${id}`, getWindow(container), editorGroupsContainer, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, nativeHostService, editorGroupService, editorService, menuService, keybindingService, commandService);
 	}
 
 	override get preventZoom(): boolean {
