@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from '../../../../nls.js';
-import { Extensions, IConfigurationRegistry } from '../../../../platform/configuration/common/configurationRegistry.js';
+import { EditPresentationTypes, Extensions, IConfigurationRegistry } from '../../../../platform/configuration/common/configurationRegistry.js';
 import { InstantiationType, registerSingleton } from '../../../../platform/instantiation/common/extensions.js';
 import { Registry } from '../../../../platform/registry/common/platform.js';
 import { registerAction2 } from '../../../../platform/actions/common/actions.js';
@@ -30,6 +30,13 @@ Registry.as<IConfigurationRegistry>(Extensions.Configuration).registerConfigurat
 			type: 'string',
 			default: '',
 			order: 2,
+		},
+		[InlineLLMConfigKeys.SystemPrompt]: {
+			description: localize('inlineLLM.systemPrompt', "Master system prompt for Inline LLM requests. Configure the assistant's behavior and output format."),
+			type: 'string',
+			default: '',
+			order: 3,
+			editPresentation: EditPresentationTypes.Multiline,
 		},
 	},
 });

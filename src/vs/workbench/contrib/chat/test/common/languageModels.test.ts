@@ -22,6 +22,7 @@ import { ContextKeyExpression } from '../../../../../platform/contextkey/common/
 import { ILanguageModelsConfigurationService } from '../../common/languageModelsConfiguration.js';
 import { IQuickInputService } from '../../../../../platform/quickinput/common/quickInput.js';
 import { TestSecretStorageService } from '../../../../../platform/secrets/test/common/testSecretStorageService.js';
+import { TestConfigurationService } from '../../../../../platform/configuration/test/common/testConfigurationService.js';
 
 suite('LanguageModels', function () {
 
@@ -50,6 +51,7 @@ suite('LanguageModels', function () {
 			},
 			new class extends mock<IQuickInputService>() { },
 			new TestSecretStorageService(),
+			new TestConfigurationService(),
 		);
 
 		languageModels.deltaLanguageModelChatProviderDescriptors([
@@ -251,6 +253,7 @@ suite('LanguageModels - When Clause', function () {
 			},
 			new class extends mock<IQuickInputService>() { },
 			new TestSecretStorageService(),
+			new TestConfigurationService(),
 		);
 
 		languageModelsWithWhen.deltaLanguageModelChatProviderDescriptors([
@@ -312,6 +315,7 @@ suite('LanguageModels - Model Picker Preferences Storage', function () {
 			},
 			new class extends mock<IQuickInputService>() { },
 			new TestSecretStorageService(),
+			new TestConfigurationService(),
 		);
 
 		// Register vendor1 used in most tests
@@ -548,6 +552,7 @@ suite('LanguageModels - Model Change Events', function () {
 			},
 			new class extends mock<IQuickInputService>() { },
 			new TestSecretStorageService(),
+			new TestConfigurationService(),
 		);
 
 		// Register the vendor first
@@ -895,6 +900,7 @@ suite('LanguageModels - Vendor Change Events', function () {
 			},
 			new class extends mock<IQuickInputService>() { },
 			new TestSecretStorageService(),
+			new TestConfigurationService(),
 		);
 	});
 

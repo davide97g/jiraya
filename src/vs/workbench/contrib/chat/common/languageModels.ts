@@ -26,6 +26,7 @@ import { ExtensionIdentifier } from '../../../../platform/extensions/common/exte
 import { createDecorator } from '../../../../platform/instantiation/common/instantiation.js';
 import { ILogService } from '../../../../platform/log/common/log.js';
 import { IQuickInputService, QuickInputHideReason } from '../../../../platform/quickinput/common/quickInput.js';
+import { IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
 import { ISecretStorageService } from '../../../../platform/secrets/common/secrets.js';
 import { IStorageService, StorageScope, StorageTarget } from '../../../../platform/storage/common/storage.js';
 import { IExtensionService } from '../../../services/extensions/common/extensions.js';
@@ -447,6 +448,7 @@ export class LanguageModelsService implements ILanguageModelsService {
 		@ILanguageModelsConfigurationService private readonly _languageModelsConfigurationService: ILanguageModelsConfigurationService,
 		@IQuickInputService private readonly _quickInputService: IQuickInputService,
 		@ISecretStorageService private readonly _secretStorageService: ISecretStorageService,
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
 	) {
 		this._hasUserSelectableModels = ChatContextKeys.languageModelsAreUserSelectable.bindTo(_contextKeyService);
 		this._modelPickerUserPreferences = this._readModelPickerPreferences();
@@ -814,7 +816,23 @@ export class LanguageModelsService implements ILanguageModelsService {
 		if (!provider) {
 			throw new Error(`Chat provider for model ${modelId} is not registered.`);
 		}
-		return provider.sendChatRequest(modelId, messages, from, options, token);
+
+		let effectiveMessages = messages;
+
+		// Apply global chat system prompt when configured.
+		// Only affect core-originated requests so extensions can manage their own prompts.
+		const systemPrompt = this._configurationService.getValue<string>('chat.systemPrompt')?.trim();
+		if (systemPrompt && from.value === 'core') {
+			effectiveMessages = [
+				{
+					role: ChatMessageRole.System,
+					content: [{ type: 'text', value: systemPrompt }],
+				},
+				...messages,
+			];
+		}
+
+		return provider.sendChatRequest(modelId, effectiveMessages, from, options, token);
 	}
 
 	computeTokenLength(modelId: string, message: string | IChatMessage, token: CancellationToken): Promise<number> {

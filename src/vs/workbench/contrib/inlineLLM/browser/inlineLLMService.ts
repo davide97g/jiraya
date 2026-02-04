@@ -23,6 +23,8 @@ export interface IInlineLLMService {
 	request(context: IInlineLLMContext, userPrompt: string, token: CancellationToken): Promise<string>;
 }
 
+// Default system prompt used when no custom prompt is configured.
+// Kept in a separate constant so the full text is easy to reuse as a default value.
 const SYSTEM_PROMPT = `You are a code assistant. The user will provide:
 1. Selected code (or full file)
 2. The full file content and path
@@ -50,6 +52,10 @@ You must respond with ONLY a single JSON object (no markdown, no explanation out
 - "file" paths must be relative to the workspace root.
 - For the current file, use the same relative path the user provided.
 - If no edits are needed, return empty "changes" and "newFiles" with an explanation.`;
+
+function getDefaultSystemPrompt(): string {
+	return SYSTEM_PROMPT;
+}
 
 function buildUserMessage(context: IInlineLLMContext, userPrompt: string): string {
 	const parts: string[] = [
@@ -94,10 +100,13 @@ export class InlineLLMServiceImpl implements IInlineLLMService {
 		const url = baseUrl.replace(/\/$/, '') + '/v1/chat/completions';
 		const userMessage = buildUserMessage(context, userPrompt);
 
+		const configuredSystemPrompt = this._configurationService.getValue<string>(InlineLLMConfigKeys.SystemPrompt)?.trim();
+		const systemPrompt = configuredSystemPrompt || getDefaultSystemPrompt();
+
 		const body = {
 			model: 'gpt-4o-mini',
 			messages: [
-				{ role: 'system', content: SYSTEM_PROMPT },
+				{ role: 'system', content: systemPrompt },
 				{ role: 'user', content: userMessage },
 			],
 			stream: false,

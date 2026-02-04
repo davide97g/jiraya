@@ -11,6 +11,7 @@ import { URI } from '../../../../base/common/uri.js';
 export const enum InlineLLMConfigKeys {
 	ApiBaseUrl = 'inlineLLM.apiBaseUrl',
 	ApiKey = 'inlineLLM.apiKey',
+	SystemPrompt = 'inlineLLM.systemPrompt',
 }
 
 /**
